@@ -6,6 +6,7 @@ const chatSchema = mongoose.Schema({
   timestamp: String,
   received: Boolean,
 });
-const chatModel = mongoose.model("messageContent", chatSchema);
+// mongoose makes the collection name lower case & plural
+const chatModel = mongoose.model("messagecontents", chatSchema);
 
 export default chatModel;
