@@ -32,21 +32,17 @@ mongoose.connect(MONGO_URI, {
 const db = mongoose.connection;
 
 db.once("open", () => {
-  console.log("DB connected!!");
+  console.log("Connection to the MongoDB is Established!! 🧙‍♂️");
   const collectionName = "messagecontents";
   const changeStream = db.collection(collectionName).watch();
 
   changeStream.on("change", (change) => {
-    console.log(`A change occured in the ${collectionName} collection.`);
+    console.log(`A change occured in the ${collectionName} collection. 😲`);
 
     if (change.operationType === "insert") {
       const messageDetails = change.fullDocument;
 
-      pusher.trigger("messages", "inserted", {
-        message: messageDetails.message,
-        name: messageDetails.name,
-        timestamp: messageDetails.timestamp,
-      });
+      pusher.trigger("messages", "inserted", messageDetails);
     } else {
       console.log("Error triggering Pusher.");
     }
@@ -77,6 +73,7 @@ app.post("/api/v1/messages/new", async (req, res) => {
   }
 });
 
+console.log(`-----------------------------------------------`);
 app.listen(PORT, () => {
-  console.log(`Server is up and running on port ${PORT}`);
+  console.log(`Server is up and running on port ${PORT} 🚀`);
 });

@@ -22,21 +22,30 @@ function App() {
 
   useEffect(() => {
     getAllMessages();
+  }, []);
 
+  useEffect(() => {
     const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
       cluster: process.env.REACT_APP_PUSHER_CLUSTER,
     });
 
     const channel = pusher.subscribe("messages");
     channel.bind("inserted", function (data) {
-      alert(JSON.stringify(data));
+    channel.bind("inserted", function (newMessage) {
+      setMessages([...messages, newMessage]);
     });
   }, []);
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [messages]);
   return (
     <div className="app">
       <div className="app__body">
         <Sidebar />
-        <Chat />
+        <Chat messages={messages} />
       </div>
     </div>
   );

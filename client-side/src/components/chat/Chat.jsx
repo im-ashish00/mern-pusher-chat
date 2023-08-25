@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Chat.css";
 import { Avatar, IconButton } from "@mui/material";
 import {
@@ -8,8 +8,22 @@ import {
   InsertEmoticon,
   Mic,
 } from "@mui/icons-material";
+import axios from "../../helpers/axios";
 
-const Chat = () => {
+const Chat = ({ messages }) => {
+  const [input, setInput] = useState("");
+
+  async function handleSendMessage(event) {
+    event.preventDefault();
+    await axios.post("/api/v1/messages/new", {
+      message: input,
+      name: "👦",
+      timestamp: "⏰",
+      received: false,
+    });
+    setInput("");
+  }
+
   return (
     <div className="chat">
       <div className="chat__header">
@@ -31,22 +45,28 @@ const Chat = () => {
         </div>
       </div>
       <div className="chat__body">
-        <p className="chat__message">
-          <span className="chat__name">Harshit</span>
-          Hello.
-          <span className="chat__timestamp">{new Date().toUTCString()}</span>
-        </p>
-        <p className="chat__message chat__receiver">
-          <span className="chat__name">Ashish</span>
-          what's up?
-          <span className="chat__timestamp">{new Date().toUTCString()}</span>
-        </p>
+        {messages.map(({ message, name, timestamp, received }) => {
+          return (
+            <p className={`chat__message ${!received && "chat__sender"}`}>
+              <span className="chat__name">{name}</span>
+              {message}
+              <span className="chat__timestamp">{timestamp}</span>
+            </p>
+          );
+        })}
       </div>
       <div className="chat__footer">
         <InsertEmoticon />
         <form>
-          <input placeholder="Type a message" type="text" />
-          <button type="submit">Send a message</button>
+          <input
+            onChange={(e) => setInput(e.target.value)}
+            value={input}
+            placeholder="Type a message"
+            type="text"
+          />
+          <button onClick={handleSendMessage} type="submit">
+            Send a message
+          </button>
         </form>
         <Mic />
       </div>
